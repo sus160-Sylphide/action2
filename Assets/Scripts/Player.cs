@@ -1,27 +1,35 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class NewMonoBehaviourScript : MonoBehaviour
 {
     // Update is called once per frame
-
     public GameObject MainCamera;
     bool jumping = false; 
     bool floating = false;
-    int health;
+    public int health;
     int player_height;
+    public Slider HPGauge;
 
     void Start()
     {
         health = 100;
-        player_height=10;
+        player_height = 10;
+
+        if (HPGauge != null)
+        {
+            HPGauge.value = health;
+        }
     }
 
     void Update() 
     {
         MainCamera.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
-
+        
         // Dキー（右移動）
         if (Input.GetKey(KeyCode.D))
         {
@@ -50,22 +58,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
     {
         if (other.gameObject.CompareTag("stageline10"))
         {
-            Debug.Log("Clear!");
-
-            Rigidbody rb = this.GetComponent<Rigidbody>();
-            rb.linearVelocity = new Vector3(rb.linearVelocity.x, 5, rb.linearVelocity.z);
-            Transform myTransform = this.transform;
-
-            health = 100;
-            player_height = 10;
-
-            // 座標を取得
-            Vector3 pos = myTransform.position;
-            pos.x = 0.0f;   // xyz座標を0初期値に
-            pos.y = 1.0f;
-            pos.z = 0.0f;
-
-            myTransform.position = pos;
+            SceneManager.LoadScene("Start");
         }
     }
     void OnCollisionEnter(Collision collision) //落下ダメージの判定
@@ -208,27 +201,16 @@ public class NewMonoBehaviourScript : MonoBehaviour
             jumping = false;
             player_height = 2;
         }
-        
+        if (HPGauge != null)
+        {
+            HPGauge.value = health;
+        }
+
         floating = false;
         Debug.Log(damage);
         if (health < 0) //死亡時処理
         {
-            Debug.Log("gameover");
-
-            Rigidbody rb = this.GetComponent<Rigidbody>();
-            rb.linearVelocity = new Vector3(rb.linearVelocity.x, 5, rb.linearVelocity.z);
-            Transform myTransform = this.transform;
-
-            health = 100;
-            player_height = 10;
-
-            // 座標を取得
-            Vector3 pos = myTransform.position;
-            pos.x = 0.0f;   // xyz座標を0初期値に
-            pos.y = 1.0f;
-            pos.z = 0.0f;    
-
-            myTransform.position = pos;
+            SceneManager.LoadScene("Gameover");
         }
     }
     void OnCollisionExit(Collision collision) //空中ジャンプの禁止
